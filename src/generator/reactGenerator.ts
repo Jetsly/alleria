@@ -1,4 +1,4 @@
-import { join, relative } from 'path';
+import { join, dirname } from 'path';
 import chalk from 'chalk';
 
 import Generator = require('yeoman-generator');
@@ -8,8 +8,11 @@ import boxen = require('boxen');
 export default class extends Generator {
   public answers: any;
 
+  public rootPkginfo: any;
+
   public async prompting() {
-    this.answers = await this.prompt([
+    this.rootPkginfo = await require('read-pkg-up')();
+    const question: any = [
       {
         name: 'appName',
         message: `What's your app name`,
@@ -28,7 +31,18 @@ export default class extends Generator {
           `Is to generator ${chalk.magenta(`${appName}@${version}`)}?`,
         type: 'confirm',
       },
-    ]);
+    ];
+    if (this.rootPkginfo.pkg && this.rootPkginfo.pkg.workspaces) {
+      question.unshift({
+        name: 'workspace',
+        message: `which workspaces choice`,
+        type: 'list',
+        choices: this.rootPkginfo.pkg.workspaces.map(workspace =>
+          workspace.replace(/\/\*$/, '')
+        ),
+      });
+    }
+    this.answers = await this.prompt(question);
     if (!this.answers.ok) {
       process.exit();
     }
@@ -44,9 +58,18 @@ export default class extends Generator {
         build: 'alleria react-build',
       },
     };
-
     this.sourceRoot(join(__dirname, '../../template/react-template'));
-    this.destinationRoot(this.answers.appName);
+    if (this.answers.workspace) {
+      this.destinationRoot(
+        join(
+          dirname(this.rootPkginfo.path),
+          this.answers.workspace,
+          this.answers.appName
+        )
+      );
+    } else {
+      this.destinationRoot(this.answers.appName);
+    }
 
     this.fs.copyTpl(
       this.templatePath('index.html'),
@@ -58,11 +81,29 @@ export default class extends Generator {
       this.destinationPath('src/index.tsx'),
       { appName: this.answers.appName }
     );
+
+    this.fs.copyTpl(
+      this.templatePath('.gitignore'),
+      this.destinationPath('.gitignore'),
+      {}
+    );
+    this.fs.copyTpl(
+      this.templatePath('.env.yml'),
+      this.destinationPath('.env.yml'),
+      {}
+    );
     this.fs.extendJSON(this.destinationPath('package.json'), pkgJson);
   }
 
   public install() {
-    this.yarnInstall(['react', 'react-dom']);
+    let options: any = {};
+    if (this.answers.workspace) {
+      this.destinationRoot(join(dirname(this.rootPkginfo.path)));
+      options = {
+        ignoreWorkspaceRootCheck: true,
+      };
+    }
+    this.yarnInstall(['react', 'react-dom'], options);
     this.yarnInstall(
       [
         '@types/react',
@@ -71,13 +112,16 @@ export default class extends Generator {
         '@hot-loader/react-dom',
       ],
       {
+        ...options,
         dev: true,
       }
     );
   }
 
   public end() {
-    const editorP = `code ${this.answers.appName}`;
+    const editorP = `code ${join(
+      ...[this.answers.workspace, this.answers.appName].filter(Boolean)
+    )}`;
     if (process.platform !== `linux`) {
       clipboardy.writeSync(editorP);
     }
