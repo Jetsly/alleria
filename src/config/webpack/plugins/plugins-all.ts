@@ -25,7 +25,19 @@ export default function loaderConfig(config: Config): void {
         configFile: sync('tsconfig.json'),
       },
     ]);
-  config.plugin('define-env').use(DefinePlugin, [loadEnvYaml()]);
+
+  config.plugin('define-config-env').use(DefinePlugin, [loadEnvYaml()]);
+  config.plugin('define-npm_package-env').use(DefinePlugin, [
+    Object.keys(process.env)
+      .filter(key => /npm_package/.test(key))
+      .reduce(
+        (preval, envKey) => ({
+          ...preval,
+          [envKey]: JSON.stringify(process.env[envKey]),
+        }),
+        {}
+      ),
+  ]);
 
   config
     .plugin('hard-source-webpack')

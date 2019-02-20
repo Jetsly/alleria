@@ -13,7 +13,7 @@ export function loaderDefault<T = any>(module): T {
 export function loadYaml(envPath) {
   try {
     if (existsSync(envPath)) {
-      return yaml.safeLoad(readFileSync(envPath, 'utf8'));
+      return yaml.safeLoad(readFileSync(envPath, 'utf8')) || {};
     }
     return {};
   } catch (e) {

@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { join } from 'path';
 import chainConfig from '../../config/webpack';
 import printServAddress from '../../utils/printServAddress';
-import loadConfig, { loadEnvYaml } from '../../utils/configify';
+import loadConfig from '../../utils/configify';
 import paths from '../../utils/paths';
 
 import checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
