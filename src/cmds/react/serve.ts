@@ -8,7 +8,6 @@ import paths from '../../utils/paths';
 
 import checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 
-import chokidar = require('chokidar');
 import express = require('express');
 import compress = require('compression');
 import webpack = require('webpack');
@@ -19,15 +18,35 @@ import httpProxyMiddleware = require('http-proxy-middleware');
 import friendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 
 const onErrors = (severity, errors) => {
-  const unOutputError = errors.filter(
-    err =>
-      err.module === undefined &&
-      err.file === undefined &&
-      err.name === undefined &&
-      err.message === undefined
-  );
-  if (unOutputError.length) {
-    unOutputError.forEach(err => process.stdout.write(err.webpackError));
+  errors
+    .filter(
+      err =>
+        err.module === undefined &&
+        err.file === undefined &&
+        err.name === undefined &&
+        err.message === undefined
+    )
+    .forEach(err => process.stdout.write(err.webpackError));
+  if (severity === 'error') {
+    const moduleNot = errors
+      .filter(
+        err =>
+          err.module === undefined &&
+          err.type === 'module-not-found' &&
+          err.webpackError.dependencies &&
+          err.webpackError.dependencies.length &&
+          err.webpackError.dependencies[0].options
+      )
+      .map(err => ({
+        ...err,
+        module: err.webpackError.dependencies[0].options.request,
+      }));
+    if (moduleNot.length) {
+      process.stdout.write(`This relative module was not found:\n\n`);
+      moduleNot.forEach(err =>
+        process.stdout.write(`* ${err.module} in ${err.file}\n\n`)
+      );
+    }
   }
 };
 
@@ -39,7 +58,7 @@ function createServer(host, port) {
       '',
     ].join('\n'),
   ];
-  const alleriaConfig = loadConfig();
+  const alleriaConfig = loadConfig(process.env.ALLERIA_NAME);
   const webpackConfig = chainConfig('development');
   (alleriaConfig.chainWebpack || (() => {}))(webpackConfig);
   Object.keys(webpackConfig.entryPoints.entries()).forEach(name => {
@@ -110,16 +129,6 @@ exports.handler = async function serveReact(argv) {
   }
   const { host, port } = argv;
   const newPort = await choosePort(host, port);
-  let devServer = createServer(host, newPort);
-  ['SIGINT', 'SIGTERM'].forEach((sig: 'SIGTERM' | 'SIGINT') => {
-    process.on(sig, () => {
-      devServer.close();
-      process.exit();
-    });
-  });
-
-  chokidar.watch([paths.appYmlEnv]).on('change', () => {
-    devServer.close();
-    devServer = createServer(host, newPort);
-  });
+  // require('../../tmp/index');
+  createServer(host, newPort);
 };

@@ -30,6 +30,7 @@ export default function loaderConfig(config: Config): void {
       },
     },
   });
+
   config.when(process.env.NODE_ENV === 'production', () => {
     config.plugin('hash-module').use(HashedModuleIdsPlugin);
     config.optimization.minimize(true);

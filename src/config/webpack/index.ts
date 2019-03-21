@@ -1,6 +1,5 @@
 import { HotModuleReplacementPlugin } from 'webpack';
 import { loaderDefault, shouldUseSourceMap } from '../../utils/configify';
-import paths from '../../utils/paths';
 
 import requireDir = require('require-dir');
 import Config = require('webpack-chain');

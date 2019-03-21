@@ -10,9 +10,9 @@ export default function loaderConfig(config: Config): void {
     .exclude.add(/node_modules/)
     .end()
 
-    .use('cache-loader')
-    .loader(require.resolve('cache-loader'))
-    .end()
+    // .use('cache-loader')
+    // .loader(require.resolve('cache-loader'))
+    // .end()
 
     .use('ts-loader')
     .loader(require.resolve('ts-loader'))

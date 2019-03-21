@@ -27,17 +27,6 @@ export default function loaderConfig(config: Config): void {
     ]);
 
   config.plugin('define-config-env').use(DefinePlugin, [loadEnvYaml()]);
-  config.plugin('define-npm_package-env').use(DefinePlugin, [
-    Object.keys(process.env)
-      .filter(key => /npm_package/.test(key))
-      .reduce(
-        (preval, envKey) => ({
-          ...preval,
-          [envKey]: JSON.stringify(process.env[envKey]),
-        }),
-        {}
-      ),
-  ]);
 
   config
     .plugin('hard-source-webpack')
@@ -46,7 +35,7 @@ export default function loaderConfig(config: Config): void {
         environmentHash: {
           root: process.cwd(),
           directories: [],
-          files: ['yarn.lock', '.env.yml'],
+          files: ['yarn.lock', '.env.yml', '.env.yaml'],
         },
       },
     ]);

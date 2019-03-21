@@ -1,5 +1,5 @@
 import { realpathSync, existsSync } from 'fs';
-import { resolve } from 'path';
+import { resolve, join } from 'path';
 
 const appDirectory = realpathSync(process.cwd());
 const resolveApp = relativePath => resolve(appDirectory, relativePath);
@@ -16,10 +16,15 @@ const resolveModule = (resolveFn, filePath) => {
 export default {
   appPath: resolveApp('.'),
   appSrc: resolveApp('src'),
+
+  appPages: resolveApp('src/pages'),
+  appTempPath: resolveApp('src/.alleria'),
   appIndexJs: resolveModule(resolveApp, 'src/index'),
+
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
-  appYmlEnv: resolveApp('.env.yml'),
+
+  appEnvFileName: 'env',
   appPackageJson: resolveApp('package.json'),
   appTsConfig: resolveApp('tsconfig.json'),
   yarnLockFile: resolveApp('yarn.lock'),
