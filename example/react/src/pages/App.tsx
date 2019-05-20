@@ -6,11 +6,11 @@ const AAA = React.lazy(() => import('./Header'));
 
 export default hot(function App() {
   return (
-    <a className={`${styles.ccc} aaa`}>
+    <a className={`${styles.ccc} a22aa`}>
       <React.Suspense fallback={() => 'loading'}>
         <AAA />
       </React.Suspense>
-      caaaaaacc
+      caaaaaacc22211
     </a>
   );
 });

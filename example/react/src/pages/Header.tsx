@@ -20,14 +20,14 @@ export class Footer extends React.Component<{}> {
 }
 export default class Header extends React.Component<{}> {
   state = {
-    a: 'ccc',
+    a: 'cccs4s444s2224442',
   };
   render() {
     return (
       <div
         onClick={() => {
           this.setState({
-            a: 'ddd',
+            a: 'ddd111',
           });
         }}
       >

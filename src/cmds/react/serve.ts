@@ -1,6 +1,5 @@
 import { choosePort } from 'react-dev-utils/WebpackDevServerUtils';
 import chalk from 'chalk';
-import { join } from 'path';
 import chainConfig from '../../config/webpack';
 import printServAddress from '../../utils/printServAddress';
 import loadConfig from '../../utils/configify';
@@ -8,13 +7,8 @@ import paths from '../../utils/paths';
 
 import checkRequiredFiles = require('react-dev-utils/checkRequiredFiles');
 
-import express = require('express');
-import compress = require('compression');
 import webpack = require('webpack');
-import devMiddleware = require('webpack-dev-middleware');
-import hotMiddleware = require('webpack-hot-middleware');
-import historyApiFallback = require('connect-history-api-fallback');
-import httpProxyMiddleware = require('http-proxy-middleware');
+import WebpackDevServer = require('webpack-dev-server');
 import friendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 
 const onErrors = (severity, errors) => {
@@ -61,9 +55,6 @@ function createServer(host, port) {
   const alleriaConfig = loadConfig(process.env.ALLERIA_NAME);
   const webpackConfig = chainConfig('development');
   (alleriaConfig.chainWebpack || (() => {}))(webpackConfig);
-  Object.keys(webpackConfig.entryPoints.entries()).forEach(name => {
-    webpackConfig.entry(name).add('webpack-hot-middleware/client');
-  });
   webpackConfig
     .plugin('friendly-errors')
     .use(friendlyErrorsWebpackPlugin, [
@@ -77,39 +68,49 @@ function createServer(host, port) {
     .end();
 
   const hasFriendError = webpackConfig.plugins.has('friendly-errors');
-  const publicPath = webpackConfig.output.get('publicPath');
-  const app = express();
-  app.use(compress());
-  app.use(
-    historyApiFallback({
-      index: join(publicPath, '/index.html'),
-    })
-  );
-  Object.keys(alleriaConfig.proxy || {}).forEach(prefix => {
-    const { target, ...rest } = alleriaConfig.proxy[prefix];
-    app.use(
-      prefix,
-      httpProxyMiddleware(prefix, {
-        target,
-        changeOrigin: true,
-        secure: false,
-        ...rest,
-      })
-    );
-  });
+  // const publicPath = webpackConfig.output.get('publicPath');
   const compiler = webpack(webpackConfig.toConfig());
-  const instance = devMiddleware(compiler, {
+  const server = new WebpackDevServer(compiler, {
     publicPath: compiler.options.output.publicPath,
-    logLevel: hasFriendError ? 'silent' : 'info',
+    compress: true,
+    historyApiFallback: true,
+    hot: true,
+    contentBase: paths.appPublic,
+    quiet: hasFriendError,
+    ...alleriaConfig,
   });
-  app.use(instance);
-  app.use(
-    hotMiddleware(compiler, {
-      log: false,
-    })
-  );
-  app.use(express.static(paths.appPublic));
-  return app.listen(port, host);
+  // const app = express();
+  // app.use(compress());
+  // app.use(
+  //   historyApiFallback({
+  //     index: join(publicPath, '/index.html'),
+  //   })
+  // );
+  // Object.keys(alleriaConfig.proxy || {}).forEach(prefix => {
+  //   const { target, ...rest } = alleriaConfig.proxy[prefix];
+  //   app.use(
+  //     prefix,
+  //     httpProxyMiddleware(prefix, {
+  //       target,
+  //       changeOrigin: true,
+  //       secure: false,
+  //       ...rest,
+  //     })
+  //   );
+  // });
+
+  // const instance = devMiddleware(compiler, {
+  //   publicPath: compiler.options.output.publicPath,
+  //   logLevel: hasFriendError ? 'silent' : 'info',
+  // });
+  // app.use(instance);
+  // app.use(
+  //   hotMiddleware(compiler, {
+  //     log: false,
+  //   })
+  // );
+  // app.use(express.static(paths.appPublic));
+  return server.listen(port, host);
 }
 
 exports.command = 'react-serve';
