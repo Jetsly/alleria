@@ -52,9 +52,13 @@ function createServer(host, port) {
       '',
     ].join('\n'),
   ];
-  const alleriaConfig = loadConfig(process.env.ALLERIA_NAME);
+  const { chainWebpack, ...alleriaConfig } = loadConfig(
+    process.env.ALLERIA_NAME
+  ) || {
+    chainWebpack: () => {},
+  };
   const webpackConfig = chainConfig('development');
-  (alleriaConfig.chainWebpack || (() => {}))(webpackConfig);
+  (chainWebpack || (() => {}))(webpackConfig);
   webpackConfig
     .plugin('friendly-errors')
     .use(friendlyErrorsWebpackPlugin, [
