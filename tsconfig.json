@@ -3,8 +3,9 @@
     "target": "es6",
     "module": "commonjs",
     "skipLibCheck": true,
+    "esModuleInterop": true,
     "outDir": "lib",
-    "baseUrl": ".",
+    "baseUrl": "."
   },
   "include": ["./src/**/*.ts"],
   "exclude": ["./test/**/*.ts"]
