@@ -1,14 +1,18 @@
 {
   "name": "alleria",
-  "version": "0.0.1-alpha.4",
+  "version": "0.0.2",
   "description": "a loose collection of plugins",
   "main": "lib/index.js",
   "repository": "git@github.com:Jetsly/alleria.git",
   "author": "Jetsly <cnljli@live.com>",
   "license": "MIT",
   "bin": {
-    "alleria": "bin/alleria.js"
+    "alleria-ghpage": "bin/deploy-gh-page.sh"
   },
+  "files": [
+    "bin",
+    "lib"
+  ],
   "keywords": [
     "alleria",
     "typescript",
@@ -16,7 +20,11 @@
     "gulp",
     "travis"
   ],
-  "scripts": {},
+  "scripts": {
+    "test": "nyc ava",
+    "build": "gulp build",
+    "coverage": "codecov"
+  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
@@ -36,13 +44,20 @@
   "devDependencies": {
     "@types/gulp": "^4.0.6",
     "@types/less": "^3.0.0",
+    "@types/markdown-it": "^0.0.8",
     "@types/node": "^12.6.2",
     "@types/through2": "^2.0.34",
     "ava": "^2.2.0",
+    "codecov": "^3.5.0",
     "gulp": "^4.0.2",
+    "gulp-typescript": "^5.0.1",
     "husky": "^3.0.0",
     "lint-staged": "^9.2.0",
+    "markdown-it": "^9.0.1",
+    "nyc": "^14.1.1",
     "prettier": "^1.18.2",
-    "ts-node": "^8.3.0"
+    "ts-node": "^8.3.0",
+    "typescript": "^3.5.3",
+    "vinyl": "^2.2.0"
   }
 }

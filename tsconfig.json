@@ -3,10 +3,11 @@
     "target": "es6",
     "module": "commonjs",
     "skipLibCheck": true,
+    "declaration": true,
     "esModuleInterop": true,
     "outDir": "lib",
     "baseUrl": "."
   },
-  "include": ["./src/**/*.ts"],
+  "include": ["./src/**/*.ts","./src/**/*.test.ts","./alleria-env.d.ts"],
   "exclude": ["./test/**/*.ts"]
 }
