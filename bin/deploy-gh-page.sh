@@ -1,10 +1,7 @@
  #!/bin/bash
 set -e # exit with nonzero exit code if anything fails
 
-project=`git remote  get-url origin | awk -F ":" '{print $2}'`
-project=${project/*github.com\//}
-echo "deploy $1 file to github<$project> page"
-
+echo "deploy $1 file to github<$2> page"
 
 if [ ! ${GITHUB_TOKEN} ]; then
   echo ${GITHUB_TOKEN?Not Found}
@@ -26,6 +23,6 @@ git config --global user.email "travis@travis-ci.org"
 git config --global user.name "Travis"
 git add -f .
 git commit -m "Travis build"
-git push --force --quiet "https://${GITHUB_TOKEN}@github.com/$project" master:gh-pages > /dev/null
+git push --force --quiet "https://${GITHUB_TOKEN}@github.com/$2.git" master:gh-pages > /dev/null
 
 echo "Done updating gh-pages\n"
