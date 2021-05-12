@@ -39,7 +39,7 @@
   "dependencies": {
     "less": "^3.9.0",
     "less-plugin-npm-import": "^2.1.0",
-    "postcss": "^7.0.17"
+    "postcss": "^8.2.10"
   },
   "devDependencies": {
     "@types/gulp": "^4.0.6",
