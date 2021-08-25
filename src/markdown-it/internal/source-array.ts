@@ -21,6 +21,7 @@ function sourceArray(
       lang: token[0].info.trim(),
       source: token[0].content.trim(),
     }));
+    return true;
   });
 }
 

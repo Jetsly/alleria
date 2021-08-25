@@ -26,6 +26,7 @@ function tagArray(
       [`${opts.tag}`]: token[1].content.trim(),
       html: md.renderer.render(token, {}, {}).trim(),
     }));
+    return true;
   });
 }
 
