@@ -1,6 +1,6 @@
 import { resolve, dirname } from 'path';
 import through2 from 'through2';
-import postcss from 'postcss';
+import postcss, { AcceptedPlugin } from 'postcss';
 import less from 'less';
 import Vinyl from 'vinyl';
 import NpmImportPlugin from 'less-plugin-npm-import';
@@ -11,10 +11,10 @@ export default function componentLess({
   paths = [],
 }: Partial<{
   regex: RegExp;
-  plugins: postcss.AcceptedPlugin[];
+  plugins: AcceptedPlugin[];
   paths: string[];
 }>) {
-  return through2.obj(function(file: Vinyl.BufferFile, encoding, next) {
+  return through2.obj(function (file: Vinyl.BufferFile, encoding, next) {
     this.push(file.clone());
     if (file.path.match(regex)) {
       const resolvedLessFile = resolve(process.cwd(), file.path);
