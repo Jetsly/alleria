@@ -23,17 +23,12 @@
   "scripts": {
     "test": "nyc ava",
     "build": "gulp build",
-    "coverage": "codecov"
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
+    "coverage": "codecov",
+    "lint": "lint-staged"
   },
   "lint-staged": {
     "**/*.{ts,tsx}": [
-      "prettier --write",
-      "git add"
+      "prettier --write"
     ]
   },
   "dependencies": {
